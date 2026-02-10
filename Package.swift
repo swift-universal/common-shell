@@ -27,7 +27,7 @@ var commonShellBenchDependencies: [Target.Dependency] = [
 let package = Package(
   name: "CommonShell",
   platforms: [
-    .macOS(.v15), .iOS(.v17), .macCatalyst(.v17),
+    .macOS(.v14), .iOS(.v17), .macCatalyst(.v17),
   ],
   products: [
     .library(name: "CommonShell", targets: ["CommonShell"]),
@@ -151,14 +151,14 @@ extension Package {
       // Prefer local mono paths with identities matching remote repo names
       .package(path: "../common-process"),
       .package(name: "common-log", path: "../common-log"),
-      .package(path: "../../../../../../wrkstrm/spm/universal/domain/system/wrkstrm-performance"),
-      .package(path: "../../../../../../wrkstrm/spm/universal/domain/system/wrkstrm-foundation"),
+      .package(path: "../../../../../../../wrkstrm/public/spm/universal/domain/system/wrkstrm-performance"),
+      .package(path: "../../../../../../../wrkstrm/public/spm/universal/domain/system/wrkstrm-foundation"),
     ])
 
     static var remote: Inject = .init(dependencies: [
       .package(url: "https://github.com/swift-universal/common-process.git", from: "0.3.0"),
       .package(url: "https://github.com/swift-universal/common-log.git", from: "3.0.0"),
-      .package(url: "https://github.com/wrkstrm/wrkstrm-performance.git", from: "0.1.0"),
+      .package(url: "https://github.com/wrkstrm/wrkstrm-performance.git", from: "0.1.1"),
       .package(url: "https://github.com/wrkstrm/wrkstrm-foundation.git", from: "3.0.0"),
     ])
   }
@@ -166,8 +166,9 @@ extension Package {
 
 extension ProcessInfo {
   public static var useLocalDeps: Bool {
+    // Default to remote deps unless explicitly enabled.
     guard let raw = ProcessInfo.processInfo.environment["SPM_USE_LOCAL_DEPS"] else { return false }
     let normalized = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-    return normalized == "1" || normalized == "true" || normalized == "yes"
+    return normalized == "1" || normalized == "true" || normalized == "yes" || normalized == "on"
   }
 }
